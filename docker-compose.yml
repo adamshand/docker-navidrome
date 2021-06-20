@@ -1,0 +1,49 @@
+version: "3.3"
+services:
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    restart: unless-stopped
+    ports: # commented out for traefik
+      - "4533:4533"
+    #extra_hosts:
+    #  - "host.docker.internal:host-gateway"
+    # this is required to make dns work: https://github.com/docker/compose/issues/2847#issuecomment-674571661
+    #network_mode: bridge
+    #dns: 
+    #  - 10.8.1.1
+    #dns_search:
+    #  - haume.nz
+    environment:
+      # All options with their default values:
+      ND_MUSICFOLDER: /music
+      ND_DATAFOLDER: /data
+      ND_SCANSCHEDULE: "@every 15m"
+      ND_LOGLEVEL: debug
+      # ND_PORT: 80
+      ND_PORT: 4533
+      ND_ENABLETRANSCODINGCONFIG: "true"
+      ND_TRANSCODINGCACHESIZE: 100MB
+      ND_RECENTLYADDEDBYMODTIME: "true"
+      ND_SESSIONTIMEOUT: 576h
+      #ND_SPOTIFY_ID:${SPOTIFY_ID}
+      #ND_SPOTIFY_SECRET:${SPOTIFY_SECRET}
+      ND_ENABLEGRAVATAR: "true"
+      ND_ENABLEUSEREDITING: "true"
+      ND_ENABLEFAVOURITES: "true"
+      ND_BASEURL: ""
+    volumes:
+      - ./data:/data
+      - /media/music:/music:ro
+      - /srv/static-binaries:/static
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.navidrome.rule=Host(`music.haume.nz`)"
+      - "traefik.http.routers.navidrome.entrypoints=websecure"
+      - "traefik.http.routers.navidrome.tls.certresolver=cloudflare"
+
+networks:
+  traefik:
+    external: true
