@@ -32,12 +32,6 @@ services:
       - /srv/static-binaries:/static
     networks:
       - caddy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.navidrome.rule=Host(`music.haume.nz`)"
-      - "traefik.http.services.navidrome.loadbalancer.server.port=4533"
-      - "traefik.http.routers.navidrome.entrypoints=websecure"
-      - "traefik.http.routers.navidrome.tls.certresolver=cloudflare"
 
 networks:
   caddy:
